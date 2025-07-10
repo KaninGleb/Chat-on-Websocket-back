@@ -1,25 +1,25 @@
-import express from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
+import express from 'express'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
 
-const app = express();
-const httpServer = createServer(app);
+const app = express()
+const httpServer = createServer(app)
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
+    origin: '*',
   },
-});
+})
 
-app.get("/", (_req, res) => {
-  res.send("Hello, it's WS server");
-});
+app.get('/', (_req, res) => {
+  res.send("Hello, it's WS server")
+})
 
-io.on("connection", (_socket) => {
-  console.log("a user connected");
-});
+io.on('connection', (_socket) => {
+  console.log('a user connected')
+})
 
-const PORT = process.env.PORT || 3009;
+const PORT = process.env.PORT || 3009
 httpServer.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+  console.log(`Server running on http://localhost:${PORT}`)
+})
