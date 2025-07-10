@@ -6,7 +6,8 @@
   "scripts": {
     "start-dev": "nodemon --inspect dist/app.js",
     "watch-dev": "tsc -w",
-    "build": "tsc",
+    "build-old": "tsc",
+    "build": "tsc --build tsconfig.build.json",
     "start": "node dist/app.js"
   },
   "dependencies": {
