@@ -19,7 +19,7 @@ io.on("connection", (_socket) => {
   console.log("a user connected");
 });
 
-const PORT = 3009;
+const PORT = process.env.PORT || 3009;
 httpServer.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
