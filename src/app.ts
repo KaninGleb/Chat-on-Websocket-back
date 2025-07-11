@@ -27,6 +27,12 @@ app.get('/', (_req, res) => {
 socket.on('connection', (socketChannel: any) => {
   console.log('New user connected:', socketChannel.id)
 
+  socketChannel.on('client-name-sent', (name: string) => {
+    if (typeof name !== 'string') {
+      return
+    }
+  })
+
   socketChannel.on('client-message-sent', (message: string) => {
     if (typeof message !== 'string') {
       return
