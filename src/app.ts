@@ -9,10 +9,10 @@ app.use(cors());
 const httpServer = createServer(app)
 // const socket = socketio(httpServer)
 
-// const messages: any[] = [
-//   { message: 'Hello, Viktor', id: 'hsdafgds', user: { id: 'sdfdsf', name: 'Dimych' } },
-//   { message: 'Hello, Dimych', id: 'asdfsdfs', user: { id: 'asdfdg', name: 'Viktor' } },
-// ]
+const messages: any[] = [
+  { message: 'Hello, Viktor', id: 'hsdafgds', user: { id: 'sdfdsf', name: 'Dimych' } },
+  { message: 'Hello, Dimych', id: 'asdfsdfs', user: { id: 'asdfdg', name: 'Viktor' } },
+]
 
 const socket = new Server(httpServer, {
   cors: {
@@ -27,14 +27,15 @@ app.get('/', (_req, res) => {
 
 
 socket.on('connection', (socketChannel: any) => {
-  socketChannel.broadcast.emit('hi');
+  console.log('New client connected:', socketChannel.id);
+  socketChannel.emit('init-messages-published', messages)
 
 
   socketChannel.on('client-message-sent', (message: string) => {
     console.log(message)
+    socket.emit('h13213131313131i');
   })
 
-//  socketChannel.emit('init-messages-published', messages)
 
   console.log('some user connected')
 })
