@@ -20,7 +20,7 @@ const socket = new Server(httpServer, {
   },
 })
 
-const users = new Map()
+const usersState = new Map()
 
 app.get('/', (_req, res) => {
   res.send("Hello, it's WS server")
@@ -29,10 +29,18 @@ app.get('/', (_req, res) => {
 socket.on('connection', (socketChannel: any) => {
   console.log('New user connected:', socketChannel.id)
 
+  usersState.set(socketChannel, {
+    id: new Date().getTime().toString(),
+    name: 'Anonymous',
+  })
+
   socketChannel.on('client-name-sent', (name: string) => {
     if (typeof name !== 'string') {
       return
     }
+
+    const user = usersState.get(socketChannel)
+    user.name = name
   })
 
   socketChannel.on('client-message-sent', (message: string) => {
@@ -40,10 +48,15 @@ socket.on('connection', (socketChannel: any) => {
       return
     }
 
+    const user = usersState.get(socketChannel)
+
     const newMessage = {
       message: message,
       id: new Date().getTime().toString(),
-      user: { id: '123weqf', name: 'Igor' },
+      user: {
+        id: user.id,
+        name: user.name,
+      },
     }
     messages.push(newMessage)
 
