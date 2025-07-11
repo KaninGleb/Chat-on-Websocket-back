@@ -33,7 +33,7 @@ socket.on('connection', (socketChannel: any) => {
 
   socketChannel.on('client-message-sent', (message: string) => {
     console.log(message)
-    socket.emit('h13213131313131i');
+    socketChannel.emit('h13213131313131i');
   })
 
 
