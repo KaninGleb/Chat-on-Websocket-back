@@ -25,7 +25,7 @@ app.get('/', (_req, res) => {
 })
 
 socket.on('connection', (socketChannel: any) => {
-  console.log('New user connected:', socketChannel.user.name)
+  console.log('New user connected:', socketChannel.id)
 
 
   socketChannel.on('client-message-sent', (message: string) => {
