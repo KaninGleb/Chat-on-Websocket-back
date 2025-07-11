@@ -34,6 +34,10 @@ socket.on('connection', (socketChannel: any) => {
     name: 'Anonymous',
   })
 
+  socket.on('disconnect', () => {
+    usersState.delete(socketChannel)
+  })
+
   socketChannel.on('client-name-sent', (name: string) => {
     if (typeof name !== 'string') {
       return
