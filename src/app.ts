@@ -25,15 +25,17 @@ app.get('/', (_req, res) => {
 })
 
 socket.on('connection', (socketChannel: any) => {
-  console.log('New client connected:', socketChannel.id)
-  socketChannel.emit('init-messages-published', messages)
+  console.log('New user connected:', socketChannel.user.name)
+
 
   socketChannel.on('client-message-sent', (message: string) => {
     console.log(message)
-    socketChannel.emit('h13213131313131i')
+    // socketChannel.emit('h13213131313131i')
   })
 
-  console.log('some user connected')
+  socketChannel.emit('init-messages-published', messages)
+
+  console.log('a user connected')
 })
 
 const PORT = process.env.PORT || 3009
