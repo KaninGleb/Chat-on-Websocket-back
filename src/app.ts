@@ -27,10 +27,15 @@ app.get('/', (_req, res) => {
 socket.on('connection', (socketChannel: any) => {
   console.log('New user connected:', socketChannel.id)
 
-
   socketChannel.on('client-message-sent', (message: string) => {
-    console.log(message)
-    // socketChannel.emit('h13213131313131i')
+    const newMessage = {
+      message: message,
+      id: new Date().getTime().toString(),
+      user: { id: '123weqf', name: 'Igor' },
+    }
+    messages.push(newMessage)
+
+    socket.emit('new-message-sent', newMessage)
   })
 
   socketChannel.emit('init-messages-published', messages)
