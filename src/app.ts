@@ -20,6 +20,8 @@ const socket = new Server(httpServer, {
   },
 })
 
+const users = new Map()
+
 app.get('/', (_req, res) => {
   res.send("Hello, it's WS server")
 })
