@@ -9,10 +9,10 @@ app.use(cors());
 const httpServer = createServer(app)
 // const socket = socketio(httpServer)
 
-const messages: any[] = [
-  { message: 'Hello, Viktor', id: 'hsdafgds', user: { id: 'sdfdsf', name: 'Dimych' } },
-  { message: 'Hello, Dimych', id: 'asdfsdfs', user: { id: 'asdfdg', name: 'Viktor' } },
-]
+// const messages: any[] = [
+//   { message: 'Hello, Viktor', id: 'hsdafgds', user: { id: 'sdfdsf', name: 'Dimych' } },
+//   { message: 'Hello, Dimych', id: 'asdfsdfs', user: { id: 'asdfdg', name: 'Viktor' } },
+// ]
 
 const socket = new Server(httpServer, {
   cors: {
