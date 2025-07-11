@@ -28,6 +28,10 @@ socket.on('connection', (socketChannel: any) => {
   console.log('New user connected:', socketChannel.id)
 
   socketChannel.on('client-message-sent', (message: string) => {
+    if (typeof message !== 'string') {
+      return
+    }
+
     const newMessage = {
       message: message,
       id: new Date().getTime().toString(),
