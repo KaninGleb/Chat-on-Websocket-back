@@ -1,13 +1,22 @@
 import express from 'express'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
+import cors from 'cors'
 
 const app = express()
-const httpServer = createServer(app)
+app.use(cors());
 
-const io = new Server(httpServer, {
+const httpServer = createServer(app)
+// const socket = socketio(httpServer)
+
+const messages: any[] = [
+  { message: 'Hello, Viktor', id: 'hsdafgds', user: { id: 'sdfdsf', name: 'Dimych' } },
+  { message: 'Hello, Dimych', id: 'asdfsdfs', user: { id: 'asdfdg', name: 'Viktor' } },
+]
+
+const socket = new Server(httpServer, {
   cors: {
-    origin: '*',
+    origin: '*'
   },
 })
 
@@ -15,11 +24,23 @@ app.get('/', (_req, res) => {
   res.send("Hello, it's WS server")
 })
 
-io.on('connection', (_socket) => {
-  console.log('a user connected')
+
+
+socket.on('connection', (socketChannel: any) => {
+  socketChannel.broadcast.emit('hi');
+
+
+  socketChannel.on('client-message-sent', (message: string) => {
+    console.log(message)
+  })
+
+//  socketChannel.emit('init-messages-published', messages)
+
+  console.log('some user connected')
 })
 
 const PORT = process.env.PORT || 3009
+
 httpServer.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)
 })
