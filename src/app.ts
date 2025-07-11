@@ -1,10 +1,10 @@
 import express from 'express'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
-import cors from 'cors'
+// import cors from 'cors'
 
 const app = express()
-app.use(cors());
+// app.use(cors())
 
 const httpServer = createServer(app)
 // const socket = socketio(httpServer)
@@ -16,7 +16,7 @@ const messages: any[] = [
 
 const socket = new Server(httpServer, {
   cors: {
-    origin: '*'
+    origin: '*',
   },
 })
 
@@ -24,18 +24,14 @@ app.get('/', (_req, res) => {
   res.send("Hello, it's WS server")
 })
 
-
-
 socket.on('connection', (socketChannel: any) => {
-  console.log('New client connected:', socketChannel.id);
+  console.log('New client connected:', socketChannel.id)
   socketChannel.emit('init-messages-published', messages)
-
 
   socketChannel.on('client-message-sent', (message: string) => {
     console.log(message)
-    socketChannel.emit('h13213131313131i');
+    socketChannel.emit('h13213131313131i')
   })
-
 
   console.log('some user connected')
 })
