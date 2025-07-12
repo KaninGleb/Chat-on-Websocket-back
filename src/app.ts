@@ -45,7 +45,7 @@ socket.on('connection', (socketChannel: any) => {
   })
 
   socketChannel.on('client-typed', () => {
-    socketChannel.emit('user-typing', usersState.get(socketChannel))
+    socketChannel.broadcast.emit('user-typing', usersState.get(socketChannel))
   })
 
   socketChannel.on('client-message-sent', (message: string) => {
