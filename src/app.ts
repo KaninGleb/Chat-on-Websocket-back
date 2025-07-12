@@ -48,6 +48,10 @@ socket.on('connection', (socketChannel: any) => {
     socketChannel.broadcast.emit('user-typing', usersState.get(socketChannel))
   })
 
+  socketChannel.on('client-stopped-typing', () => {
+    socketChannel.broadcast.emit('user-stopped-typing', usersState.get(socketChannel))
+  })
+
   socketChannel.on('client-message-sent', (message: string) => {
     if (typeof message !== 'string') {
       return
