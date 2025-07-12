@@ -65,8 +65,6 @@ socket.on('connection', (socketChannel: any) => {
   })
 
   socketChannel.emit('init-messages-published', messages)
-
-  console.log('a user connected')
 })
 
 const PORT = process.env.PORT || 3009
