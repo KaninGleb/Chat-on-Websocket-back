@@ -64,7 +64,7 @@ socket.on('connection', (socketChannel: any) => {
     socket.emit('new-message-sent', newMessage)
   })
 
-  socketChannel.emit('init-messages-published', messages)
+  socket.emit('init-messages-published', messages)
 })
 
 const PORT = process.env.PORT || 3009
