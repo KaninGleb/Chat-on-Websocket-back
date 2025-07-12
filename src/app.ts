@@ -45,11 +45,17 @@ socket.on('connection', (socketChannel: any) => {
   })
 
   socketChannel.on('client-typed', () => {
-    socketChannel.broadcast.emit('user-typing', usersState.get(socketChannel))
+    const user = usersState.get(socketChannel)
+    if (user) {
+      socketChannel.broadcast.emit('user-typing', user)
+    }
   })
 
   socketChannel.on('client-stopped-typing', () => {
-    socketChannel.broadcast.emit('user-stopped-typing', usersState.get(socketChannel))
+    const user = usersState.get(socketChannel)
+    if (user) {
+      socketChannel.broadcast.emit('user-stopped-typing', user)
+    }
   })
 
   socketChannel.on('client-message-sent', (message: string) => {
