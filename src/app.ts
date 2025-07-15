@@ -31,11 +31,14 @@ socket.on('connection', (socketChannel: any) => {
     name: 'Anonymous',
   })
 
+  updateUsersCount()
+
   socketChannel.on('disconnect', () => {
     const user = usersState.get(socketChannel)
     if (user) {
       socketChannel.broadcast.emit('user-stopped-typing', user)
       usersState.delete(socketChannel)
+      updateUsersCount()
     }
   })
 
@@ -84,6 +87,13 @@ socket.on('connection', (socketChannel: any) => {
 
   socket.emit('init-messages-published', messages)
 })
+
+
+function updateUsersCount() {
+  const count = usersState.size
+  socket.emit('users-count-updated', count)
+}
+
 
 const PORT = process.env.PORT || 3009
 
