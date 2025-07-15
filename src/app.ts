@@ -1,6 +1,7 @@
 import express from 'express'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
+import { randomUUID } from 'node:crypto'
 
 const app = express()
 
@@ -20,8 +21,8 @@ const EVENTS = {
 } as const
 
 const messages: any[] = [
-  { message: 'Hello, Viktor', id: 'hsdafgds', user: { id: 'sdfdsf', name: 'Dimych' } },
-  { message: 'Hello, Dimych', id: 'asdfsdfs', user: { id: 'asdfdg', name: 'Viktor' } },
+  { message: 'Hello, Viktor!', id: randomUUID(), user: { id: randomUUID(), name: 'Dimych' } },
+  { message: 'Hello, Dimych!', id: randomUUID(), user: { id: randomUUID(), name: 'Viktor' } },
 ]
 
 const socket = new Server(httpServer, {
@@ -40,7 +41,7 @@ socket.on('connection', (socketChannel: any) => {
   console.log('New user connected:', socketChannel.id)
 
   usersState.set(socketChannel, {
-    id: new Date().getTime().toString(),
+    id: randomUUID(),
     name: 'Anonymous',
   })
 
@@ -87,7 +88,7 @@ socket.on('connection', (socketChannel: any) => {
 
     const newMessage = {
       message: message,
-      id: new Date().getTime().toString(),
+      id: randomUUID(),
       user: {
         id: user.id,
         name: user.name,
