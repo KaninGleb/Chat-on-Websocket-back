@@ -6,6 +6,19 @@ const app = express()
 
 const httpServer = createServer(app)
 
+const EVENTS = {
+  INIT_MESSAGES: 'init-messages-published',
+  NEW_MESSAGE: 'new-message-sent',
+  USER_TYPING: 'user-typing',
+  USER_STOP_TYPING: 'user-stopped-typing',
+  USERS_COUNT_UPDATING: 'users-count-updated',
+  DISCONNECT: 'disconnect',
+  CLIENT_NAME_SENT: 'client-name-sent',
+  CLIENT_MESSAGE_SENT: 'client-message-sent',
+  CLIENT_TYPED: 'client-typed',
+  CLIENT_STOPPED_TYPING: 'client-stopped-typing',
+} as const
+
 const messages: any[] = [
   { message: 'Hello, Viktor', id: 'hsdafgds', user: { id: 'sdfdsf', name: 'Dimych' } },
   { message: 'Hello, Dimych', id: 'asdfsdfs', user: { id: 'asdfdg', name: 'Viktor' } },
@@ -33,16 +46,16 @@ socket.on('connection', (socketChannel: any) => {
 
   updateUsersCount()
 
-  socketChannel.on('disconnect', () => {
+  socketChannel.on(EVENTS.DISCONNECT, () => {
     const user = usersState.get(socketChannel)
     if (user) {
-      socketChannel.broadcast.emit('user-stopped-typing', user)
+      socketChannel.broadcast.emit(EVENTS.USER_STOP_TYPING, user)
       usersState.delete(socketChannel)
       updateUsersCount()
     }
   })
 
-  socketChannel.on('client-name-sent', (name: string) => {
+  socketChannel.on(EVENTS.CLIENT_NAME_SENT, (name: string) => {
     if (typeof name !== 'string') {
       return
     }
@@ -51,21 +64,21 @@ socket.on('connection', (socketChannel: any) => {
     user.name = name
   })
 
-  socketChannel.on('client-typed', () => {
+  socketChannel.on(EVENTS.CLIENT_TYPED, () => {
     const user = usersState.get(socketChannel)
     if (user) {
-      socketChannel.broadcast.emit('user-typing', user)
+      socketChannel.broadcast.emit(EVENTS.USER_TYPING, user)
     }
   })
 
-  socketChannel.on('client-stopped-typing', () => {
+  socketChannel.on(EVENTS.CLIENT_STOPPED_TYPING, () => {
     const user = usersState.get(socketChannel)
     if (user) {
-      socketChannel.broadcast.emit('user-stopped-typing', user)
+      socketChannel.broadcast.emit(EVENTS.USER_STOP_TYPING, user)
     }
   })
 
-  socketChannel.on('client-message-sent', (message: string) => {
+  socketChannel.on(EVENTS.CLIENT_MESSAGE_SENT, (message: string) => {
     if (typeof message !== 'string') {
       return
     }
@@ -82,18 +95,16 @@ socket.on('connection', (socketChannel: any) => {
     }
     messages.push(newMessage)
 
-    socket.emit('new-message-sent', newMessage)
+    socket.emit(EVENTS.NEW_MESSAGE, newMessage)
   })
 
-  socket.emit('init-messages-published', messages)
+  socket.emit(EVENTS.INIT_MESSAGES, messages)
 })
-
 
 function updateUsersCount() {
   const count = usersState.size
-  socket.emit('users-count-updated', count)
+  socket.emit(EVENTS.USERS_COUNT_UPDATING, count)
 }
-
 
 const PORT = process.env.PORT || 3009
 
