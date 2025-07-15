@@ -21,8 +21,18 @@ const EVENTS = {
 } as const
 
 const messages: any[] = [
-  { message: 'Hello, Viktor!', id: randomUUID(), user: { id: randomUUID(), name: 'Dimych' } },
-  { message: 'Hello, Dimych!', id: randomUUID(), user: { id: randomUUID(), name: 'Viktor' } },
+  {
+    message: 'Hello, Viktor!',
+    id: randomUUID(),
+    createdAt: new Date(Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    user: { id: randomUUID(), name: 'Dimych' },
+  },
+  {
+    message: 'Hello, Dimych!',
+    id: randomUUID(),
+    createdAt: new Date(Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    user: { id: randomUUID(), name: 'Viktor' },
+  },
 ]
 
 const socket = new Server(httpServer, {
@@ -89,6 +99,7 @@ socket.on('connection', (socketChannel: any) => {
     const newMessage = {
       message: message,
       id: randomUUID(),
+      createdAt: new Date(Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       user: {
         id: user.id,
         name: user.name,
