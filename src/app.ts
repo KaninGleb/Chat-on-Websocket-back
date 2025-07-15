@@ -15,6 +15,7 @@ const EVENTS = {
   USER_STOP_TYPING: 'user-stopped-typing',
   USERS_COUNT_UPDATING: 'users-count-updated',
   DISCONNECT: 'disconnect',
+  CLIENT_TIMEZONE_SENT: 'client-timezone-sent',
   CLIENT_NAME_SENT: 'client-name-sent',
   CLIENT_MESSAGE_SENT: 'client-message-sent',
   CLIENT_TYPED: 'client-typed',
@@ -68,6 +69,15 @@ io.on('connection', (socket: Socket) => {
 
   updateUsersCount()
 
+  socket.on(EVENTS.CLIENT_TIMEZONE_SENT, (timeZone: string) => {
+    if (typeof timeZone !== 'string') return
+
+    const user = usersState.get(socket)
+    if (user) {
+      user.timeZone = timeZone
+    }
+  })
+
   socket.on(EVENTS.DISCONNECT, () => {
     const user = usersState.get(socket)
     if (user) {
@@ -109,14 +119,18 @@ io.on('connection', (socket: Socket) => {
     const newMessage = {
       message: message,
       id: randomUUID(),
-      createdAt: new Date(Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      createdAt: new Date(Date.now()).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: user.timeZone || 'UTC',
+      }),
       user: {
         id: user.id,
         name: user.name,
       },
     }
-    messages.push(newMessage)
 
+    messages.push(newMessage)
     io.emit(EVENTS.NEW_MESSAGE, newMessage)
   })
 
