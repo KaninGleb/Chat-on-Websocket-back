@@ -32,7 +32,11 @@ socket.on('connection', (socketChannel: any) => {
   })
 
   socket.on('disconnect', () => {
-    usersState.delete(socketChannel)
+    const user = usersState.get(socketChannel)
+    if (user) {
+      socketChannel.broadcast.emit('user-stopped-typing', user)
+      usersState.delete(socketChannel)
+    }
   })
 
   socketChannel.on('client-name-sent', (name: string) => {
