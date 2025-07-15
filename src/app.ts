@@ -1,7 +1,8 @@
 import express from 'express'
 import { createServer } from 'http'
-import { Server } from 'socket.io'
+import {Server, Socket} from 'socket.io'
 import { randomUUID } from 'node:crypto'
+import type {Message, User} from './types.ts';
 
 const app = express()
 
@@ -20,7 +21,7 @@ const EVENTS = {
   CLIENT_STOPPED_TYPING: 'client-stopped-typing',
 } as const
 
-const messages: any[] = [
+const messages: Message[] = [
   {
     message: 'Hello, Viktor!',
     id: randomUUID(),
@@ -35,66 +36,67 @@ const messages: any[] = [
   },
 ]
 
-const socket = new Server(httpServer, {
+const io = new Server(httpServer, {
   cors: {
     origin: '*',
   },
 })
 
-const usersState = new Map()
+const usersState = new Map<Socket, User>()
 
 app.get('/', (_req, res) => {
   res.send("Hello, it's WS server")
 })
 
-socket.on('connection', (socketChannel: any) => {
-  console.log('New user connected:', socketChannel.id)
+io.on('connection', (socket: Socket) => {
+  console.log('New user connected:', socket.id)
 
-  usersState.set(socketChannel, {
+  const user: User = {
     id: randomUUID(),
     name: 'Anonymous',
-  })
+  }
+
+  usersState.set(socket, user)
 
   updateUsersCount()
 
-  socketChannel.on(EVENTS.DISCONNECT, () => {
-    const user = usersState.get(socketChannel)
+  socket.on(EVENTS.DISCONNECT, () => {
+    const user = usersState.get(socket)
     if (user) {
-      socketChannel.broadcast.emit(EVENTS.USER_STOP_TYPING, user)
-      usersState.delete(socketChannel)
+      socket.broadcast.emit(EVENTS.USER_STOP_TYPING, user)
+      usersState.delete(socket)
       updateUsersCount()
     }
   })
 
-  socketChannel.on(EVENTS.CLIENT_NAME_SENT, (name: string) => {
-    if (typeof name !== 'string') {
-      return
-    }
+  socket.on(EVENTS.CLIENT_NAME_SENT, (name: string) => {
+    if (typeof name !== 'string') return
 
-    const user = usersState.get(socketChannel)
-    user.name = name
-  })
-
-  socketChannel.on(EVENTS.CLIENT_TYPED, () => {
-    const user = usersState.get(socketChannel)
+    const user = usersState.get(socket)
     if (user) {
-      socketChannel.broadcast.emit(EVENTS.USER_TYPING, user)
+      user.name = name
     }
   })
 
-  socketChannel.on(EVENTS.CLIENT_STOPPED_TYPING, () => {
-    const user = usersState.get(socketChannel)
+  socket.on(EVENTS.CLIENT_TYPED, () => {
+    const user = usersState.get(socket)
     if (user) {
-      socketChannel.broadcast.emit(EVENTS.USER_STOP_TYPING, user)
+      socket.broadcast.emit(EVENTS.USER_TYPING, user)
     }
   })
 
-  socketChannel.on(EVENTS.CLIENT_MESSAGE_SENT, (message: string) => {
-    if (typeof message !== 'string') {
-      return
+  socket.on(EVENTS.CLIENT_STOPPED_TYPING, () => {
+    const user = usersState.get(socket)
+    if (user) {
+      socket.broadcast.emit(EVENTS.USER_STOP_TYPING, user)
     }
+  })
 
-    const user = usersState.get(socketChannel)
+  socket.on(EVENTS.CLIENT_MESSAGE_SENT, (message: string) => {
+    if (typeof message !== 'string') return
+
+    const user = usersState.get(socket)
+    if (!user) return
 
     const newMessage = {
       message: message,
@@ -107,15 +109,15 @@ socket.on('connection', (socketChannel: any) => {
     }
     messages.push(newMessage)
 
-    socket.emit(EVENTS.NEW_MESSAGE, newMessage)
+    io.emit(EVENTS.NEW_MESSAGE, newMessage)
   })
 
-  socket.emit(EVENTS.INIT_MESSAGES, messages)
+  io.emit(EVENTS.INIT_MESSAGES, messages)
 })
 
 function updateUsersCount() {
   const count = usersState.size
-  socket.emit(EVENTS.USERS_COUNT_UPDATING, count)
+  io.emit(EVENTS.USERS_COUNT_UPDATING, count)
 }
 
 const PORT = process.env.PORT || 3009
