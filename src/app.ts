@@ -69,6 +69,8 @@ io.on('connection', (socket: Socket) => {
 
   updateUsersCount()
 
+  socket.emit(EVENTS.INIT_MESSAGES, messages)
+
   socket.on(EVENTS.CLIENT_TIMEZONE_SENT, (timeZone: string) => {
     if (typeof timeZone !== 'string') return
 
@@ -78,35 +80,12 @@ io.on('connection', (socket: Socket) => {
     }
   })
 
-  socket.on(EVENTS.DISCONNECT, () => {
-    const user = usersState.get(socket)
-    if (user) {
-      socket.broadcast.emit(EVENTS.USER_STOP_TYPING, user)
-      usersState.delete(socket)
-      updateUsersCount()
-    }
-  })
-
   socket.on(EVENTS.CLIENT_NAME_SENT, (name: string) => {
     if (typeof name !== 'string') return
 
     const user = usersState.get(socket)
     if (user) {
       user.name = name
-    }
-  })
-
-  socket.on(EVENTS.CLIENT_TYPED, () => {
-    const user = usersState.get(socket)
-    if (user) {
-      socket.broadcast.emit(EVENTS.USER_TYPING, user)
-    }
-  })
-
-  socket.on(EVENTS.CLIENT_STOPPED_TYPING, () => {
-    const user = usersState.get(socket)
-    if (user) {
-      socket.broadcast.emit(EVENTS.USER_STOP_TYPING, user)
     }
   })
 
@@ -134,7 +113,28 @@ io.on('connection', (socket: Socket) => {
     io.emit(EVENTS.NEW_MESSAGE, newMessage)
   })
 
-  socket.emit(EVENTS.INIT_MESSAGES, messages)
+  socket.on(EVENTS.CLIENT_TYPED, () => {
+    const user = usersState.get(socket)
+    if (user) {
+      socket.broadcast.emit(EVENTS.USER_TYPING, user)
+    }
+  })
+
+  socket.on(EVENTS.CLIENT_STOPPED_TYPING, () => {
+    const user = usersState.get(socket)
+    if (user) {
+      socket.broadcast.emit(EVENTS.USER_STOP_TYPING, user)
+    }
+  })
+
+  socket.on(EVENTS.DISCONNECT, () => {
+    const user = usersState.get(socket)
+    if (user) {
+      socket.broadcast.emit(EVENTS.USER_STOP_TYPING, user)
+      usersState.delete(socket)
+      updateUsersCount()
+    }
+  })
 })
 
 function updateUsersCount() {
