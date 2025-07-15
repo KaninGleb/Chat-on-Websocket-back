@@ -31,7 +31,7 @@ socket.on('connection', (socketChannel: any) => {
     name: 'Anonymous',
   })
 
-  socket.on('disconnect', () => {
+  socketChannel.on('disconnect', () => {
     const user = usersState.get(socketChannel)
     if (user) {
       socketChannel.broadcast.emit('user-stopped-typing', user)
