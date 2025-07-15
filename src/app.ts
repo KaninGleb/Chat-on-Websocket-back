@@ -1,8 +1,8 @@
 import express from 'express'
 import { createServer } from 'http'
-import {Server, Socket} from 'socket.io'
+import { Server, Socket } from 'socket.io'
 import { randomUUID } from 'node:crypto'
-import type {Message, User} from './types.ts';
+import type { Message, User } from './types.ts'
 
 const app = express()
 
@@ -25,13 +25,21 @@ const messages: Message[] = [
   {
     message: 'Hello, Viktor!',
     id: randomUUID(),
-    createdAt: new Date(Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    createdAt: new Date(Date.now()).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Europe/Minsk',
+    }),
     user: { id: randomUUID(), name: 'Dimych' },
   },
   {
     message: 'Hello, Dimych!',
     id: randomUUID(),
-    createdAt: new Date(Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    createdAt: new Date(Date.now()).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Europe/Minsk',
+    }),
     user: { id: randomUUID(), name: 'Viktor' },
   },
 ]
@@ -112,7 +120,7 @@ io.on('connection', (socket: Socket) => {
     io.emit(EVENTS.NEW_MESSAGE, newMessage)
   })
 
-  io.emit(EVENTS.INIT_MESSAGES, messages)
+  socket.emit(EVENTS.INIT_MESSAGES, messages)
 })
 
 function updateUsersCount() {
