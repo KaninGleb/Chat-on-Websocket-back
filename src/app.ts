@@ -51,7 +51,7 @@ const io = new Server(httpServer, {
   },
 })
 
-const usersState = new Map<string, User>()
+const usersState = new Map<Socket, User>()
 
 app.get('/', (_req, res) => {
   res.send("Hello, it's WS server")
@@ -65,7 +65,7 @@ io.on('connection', (socket: Socket) => {
     name: 'Anonymous',
   }
 
-  usersState.set(socket.id, user)
+  usersState.set(socket, user)
 
   updateUsersCount()
 
@@ -74,7 +74,7 @@ io.on('connection', (socket: Socket) => {
   socket.on(EVENTS.CLIENT_TIMEZONE_SENT, (timeZone: string) => {
     if (typeof timeZone !== 'string') return
 
-    const user = usersState.get(socket.id)
+    const user = usersState.get(socket)
     if (user) {
       user.timeZone = timeZone
     }
@@ -83,7 +83,7 @@ io.on('connection', (socket: Socket) => {
   socket.on(EVENTS.CLIENT_NAME_SENT, (name: string) => {
     if (typeof name !== 'string') return
 
-    const user = usersState.get(socket.id)
+    const user = usersState.get(socket)
     if (user) {
       user.name = name
     }
@@ -92,7 +92,7 @@ io.on('connection', (socket: Socket) => {
   socket.on(EVENTS.CLIENT_MESSAGE_SENT, (message: string) => {
     if (typeof message !== 'string') return
 
-    const user = usersState.get(socket.id)
+    const user = usersState.get(socket)
     if (!user) return
 
     const newMessage = {
@@ -114,24 +114,24 @@ io.on('connection', (socket: Socket) => {
   })
 
   socket.on(EVENTS.CLIENT_TYPED, () => {
-    const user = usersState.get(socket.id)
+    const user = usersState.get(socket)
     if (user) {
       socket.broadcast.emit(EVENTS.USER_TYPING, user)
     }
   })
 
   socket.on(EVENTS.CLIENT_STOPPED_TYPING, () => {
-    const user = usersState.get(socket.id)
+    const user = usersState.get(socket)
     if (user) {
       socket.broadcast.emit(EVENTS.USER_STOP_TYPING, user)
     }
   })
 
   socket.on(EVENTS.DISCONNECT, () => {
-    const user = usersState.get(socket.id)
+    const user = usersState.get(socket)
     if (user) {
       socket.broadcast.emit(EVENTS.USER_STOP_TYPING, user)
-      usersState.delete(socket.id)
+      usersState.delete(socket)
       updateUsersCount()
     }
   })
