@@ -1,5 +1,5 @@
 {
-  "name": "websocket-back",
+  "name": "chat-via-websocket-back",
   "private": true,
   "version": "0.0.0",
   "type": "module",
