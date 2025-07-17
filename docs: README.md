@@ -31,16 +31,16 @@ git clone https://github.com/KaninGleb/Chat-via-Websocket-back.git
 cd Chat-via-Websocket-back
 
 # Install dependencies
-npm install
+pnpm install
 
 # Build the project
-npm run build
+pnpm run build
 
 # Run in development mode (with hot reload)
-npm run start-dev
+pnpm run start-dev
 
 # Run the built server
-npm start
+pnpm start
 ```
 
 > ⚠️ **Note:** This server listens by default on port 3009. You can change it via the `PORT` environment variable.
@@ -63,6 +63,6 @@ npm start
 * `client-name-sent` — receive client username
 * `client-message-sent` — receive a new message from client
 
-##  License
+## ⚖️ License
 
 MIT — free to use, modify, and distribute.
